@@ -79,3 +79,4 @@ C:\Users\Totko\Documents\Visual Studio 2015\Projects\WebProject\WebProject\bin\M
 C:\Users\Totko\Documents\Visual Studio 2015\Projects\WebProject\WebProject\bin\Microsoft.Owin.Security.MicrosoftAccount.xml
 C:\Users\Totko\Documents\Visual Studio 2015\Projects\WebProject\WebProject\obj\Debug\WebProject.dll
 C:\Users\Totko\Documents\Visual Studio 2015\Projects\WebProject\WebProject\obj\Debug\WebProject.pdb
+C:\Users\Totko\Documents\Visual Studio 2015\Projects\WebProject\WebProject\obj\Debug\WebProject.csprojResolveAssemblyReference.cache

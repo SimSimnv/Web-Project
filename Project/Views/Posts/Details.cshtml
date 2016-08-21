@@ -22,24 +22,7 @@
         </dt>
 
         <dd>
-            @{ bool IsAnonymous = true;}
-            @foreach (var post in ViewBag.Posts)
-            {
-                if (post.Id == Model.Id)
-                {
-                    if (post.Author != null)
-                    {
-                        <i>@post.Author.FullName</i><i>(@post.Author.UserName )</i>
-                        IsAnonymous = false;
-                    }
-
-                }
-            }
-            @if (IsAnonymous)
-            {
-                <i>Anonymous</i>
-            }
-
+            @Model.Author.FullName<i>(@Model.Author.UserName )</i>                       
         </dd>
         <dt>
             @Html.DisplayNameFor(model => model.Body)
@@ -60,6 +43,9 @@
     </dl>
 </div>
 <p>
-    @Html.ActionLink("Edit", "Edit", new { id = Model.Id }) |
+    @if (Model.Author.UserName == User.Identity.Name || User.IsInRole("Administrator"))
+    {
+       @: @Html.ActionLink("Edit", "Edit", new { id = Model.Id }) |
+    }
     @Html.ActionLink("Back to List", "Index")
 </p>
