@@ -10,64 +10,62 @@ using WebProject.Models;
 
 namespace WebProject.Controllers
 {
-    public class PostsController : Controller
+    public class CommentsController : Controller
     {
         private ApplicationDbContext db = new ApplicationDbContext();
 
-        // GET: Posts
+        // GET: Comments
         public ActionResult Index()
         {
-            var posts = db.Posts.Include(p => p.Author).Include(p=>p.Comments);
-            return View(posts.ToList());
+            var comments = db.Comments.Include(c => c.Author).Include(c => c.Post);
+            return View(comments.ToList());
         }
 
-        // GET: Posts/Details/5
+        // GET: Comments/Details/5
         public ActionResult Details(int? id)
         {
             if (id == null)
             {
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
-            Post post = db.Posts.Include(p => p.Author).Include(p=>p.Comments).SingleOrDefault(p => p.Id == id);
-            var comments = db.Comments.Where(c => c.Post.Id == id).Include(c => c.Author);
-            ViewBag.Comments = comments;
-           
-            if (post == null)
+            Comment comment = db.Comments.Find(id);
+            if (comment == null)
             {
                 return HttpNotFound();
             }
-
-            return View(post);
+            return View(comment);
         }
 
-        // GET: Posts/Create
+        // GET: Comments/Create
         [Authorize]
         public ActionResult Create()
         {
             return View();
         }
 
-        // POST: Posts/Create
+        // POST: Comments/Create
         // To protect from overposting attacks, please enable the specific properties you want to bind to, for 
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
-        [Authorize]
         [ValidateAntiForgeryToken]
-        public ActionResult Create([Bind(Include = "Id,Title,Body")] Post post)
+        [Authorize]
+        public ActionResult Create(int id,[Bind(Include = "Id,Body")] Comment comment)
         {
             if (ModelState.IsValid)
             {
-                post.Date = DateTime.Now;
-                post.Author = db.Users.FirstOrDefault(u => u.UserName == User.Identity.Name);
-                db.Posts.Add(post);
+                comment.Date = DateTime.Now;
+                comment.Author = db.Users.FirstOrDefault(u => u.UserName == User.Identity.Name);
+                comment.Post = db.Posts.Single(p => p.Id == id);
+                
+                db.Comments.Add(comment);
                 db.SaveChanges();
-                return RedirectToAction("Index");
+                return RedirectToAction("Details", "Posts", new { id = id });
             }
 
-            return View(post);
+            return View(comment);
         }
 
-        // GET: Posts/Edit/5
+        // GET: Comments/Edit/5
         [Authorize]
         public ActionResult Edit(int? id)
         {
@@ -75,34 +73,32 @@ namespace WebProject.Controllers
             {
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
-            Post post = db.Posts.Include(p => p.Author).SingleOrDefault(p => p.Id == id);
-
-            if (post == null || post.Author.UserName!=User.Identity.Name && !User.IsInRole("Administrator"))
+            Comment comment = db.Comments.Include(c => c.Author).SingleOrDefault(c => c.Id == id);
+            if (comment == null || comment.Author.UserName != User.Identity.Name && !User.IsInRole("Administrator"))
             {
                 return HttpNotFound();
             }
-            return View(post);
+            return View(comment);
         }
 
-        // POST: Posts/Edit/5
+        // POST: Comments/Edit/5
         // To protect from overposting attacks, please enable the specific properties you want to bind to, for 
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
         [Authorize]
-        public ActionResult Edit([Bind(Include = "Id,Title,Body,Date")] Post post)
+        public ActionResult Edit([Bind(Include = "Id,Body,Date")] Comment comment)
         {
-            
             if (ModelState.IsValid)
             {
-                db.Entry(post).State = EntityState.Modified;
+                db.Entry(comment).State = EntityState.Modified;
                 db.SaveChanges();
                 return RedirectToAction("Index");
             }
-            return View(post);
+            return View(comment);
         }
 
-        // GET: Posts/Delete/5
+        // GET: Comments/Delete/5
         [Authorize]
         public ActionResult Delete(int? id)
         {
@@ -110,26 +106,22 @@ namespace WebProject.Controllers
             {
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
-
-            Post post = db.Posts.Include(p => p.Author).SingleOrDefault(p => p.Id == id);
-
-            if (post == null || post.Author.UserName != User.Identity.Name && !User.IsInRole("Administrator"))
+            Comment comment = db.Comments.Include(c => c.Author).SingleOrDefault(c => c.Id == id);
+            if (comment == null || comment.Author.UserName != User.Identity.Name && !User.IsInRole("Administrator"))
             {
                 return HttpNotFound();
             }
-
-            
-            return View(post);
+            return View(comment);
         }
 
-        // POST: Posts/Delete/5
-        [Authorize]
+        // POST: Comments/Delete/5
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
+        [Authorize]
         public ActionResult DeleteConfirmed(int id)
         {
-            Post post = db.Posts.Find(id);
-            db.Posts.Remove(post);
+            Comment comment = db.Comments.Find(id);
+            db.Comments.Remove(comment);
             db.SaveChanges();
             return RedirectToAction("Index");
         }

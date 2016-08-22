@@ -40,7 +40,31 @@
             @Html.DisplayFor(model => model.Date)
         </dd>
 
+        <dd>
+            @if (User.Identity.IsAuthenticated)
+            {
+                <p>
+                    @Html.ActionLink("Add Comment", "Create","Comments", new { id = Model.Id }, null)
+                </p>
+            }
+        </dd>
     </dl>
+
+    <table class="table">
+        <tr>
+            <th>Author</th>
+            <th>Comment</th>
+        </tr>
+        @foreach (var comment in ViewBag.Comments)
+        {
+            <tr>
+                <td>@comment.Author.UserName</td>
+                <td>@comment.Body</td>
+            </tr>
+        }
+    </table>
+
+
 </div>
 <p>
     @if (Model.Author.UserName == User.Identity.Name || User.IsInRole("Administrator"))
