@@ -14,7 +14,6 @@ namespace WebProject.Controllers
         public ActionResult Index()
         {
             var posts = db.Posts.Include(p => p.Author).OrderByDescending(p => p.Date).Take(4).ToList();
-
             return View(posts);
         }
     }

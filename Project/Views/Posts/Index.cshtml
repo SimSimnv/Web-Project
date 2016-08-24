@@ -27,8 +27,12 @@
             Comments
         </th>
         <th>
+            Tags
+        </th>
+        <th>
             @Html.DisplayNameFor(model => model.Date)
         </th>
+
         <th>
             Actions
         </th>
@@ -58,8 +62,15 @@
             @item.Comments.Count
         </td>
         <td>
+            @foreach (var tag in item.Tags)
+            {
+                @: @(tag.Name + " ")
+            }
+        </td>
+        <td>
             @Html.DisplayFor(modelItem => item.Date)
         </td>
+
         <td>
             @if (item.Author!=null && (item.Author.UserName == User.Identity.Name || User.IsInRole("Administrator")))
             {

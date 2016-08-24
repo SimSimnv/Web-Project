@@ -17,7 +17,7 @@ namespace WebProject.Controllers
         // GET: Posts
         public ActionResult Index()
         {
-            var posts = db.Posts.Include(p => p.Author).Include(p=>p.Comments);
+            var posts = db.Posts.Include(p => p.Author).Include(p=>p.Comments).Include(p=>p.Tags);
             return View(posts.ToList());
         }
 
@@ -53,14 +53,48 @@ namespace WebProject.Controllers
         [HttpPost]
         [Authorize]
         [ValidateAntiForgeryToken]
-        public ActionResult Create([Bind(Include = "Id,Title,Body")] Post post)
+        public ActionResult Create(string TagString,[Bind(Include = "Id,Title,Body")] Post post)
         {
             if (ModelState.IsValid)
             {
+                //creating new tags in the tag table
+
+                var tags = TagString
+                    .Split(',')
+                    .Select(t => t.ToLower())
+                    .Select(t => t.Trim())
+                    .Distinct();
+
+                foreach (var name in tags)
+                {
+                    //tags are unique->checking if tag already exists
+
+                    var tagCheck = db.Tags.FirstOrDefault(t => t.Name == name);
+                    if (!db.Tags.ToList().Contains(tagCheck))
+                    {
+                        var tag = new Tag();
+                        tag.Name =name;
+                        db.Tags.Add(tag);
+                    }
+
+                }
+               
+                //creating the post
+
                 post.Date = DateTime.Now;
                 post.Author = db.Users.FirstOrDefault(u => u.UserName == User.Identity.Name);
                 db.Posts.Add(post);
                 db.SaveChanges();
+
+                //adding the new tags to the post and updating the table
+                foreach (var name in tags)
+                {
+                    var tag = db.Tags.FirstOrDefault(t => t.Name == name);
+                    db.Posts.Include("Tags").FirstOrDefault(p => p.Id == post.Id).Tags.Add(tag);
+                }
+
+                db.SaveChanges();
+
                 return RedirectToAction("Index");
             }
 
