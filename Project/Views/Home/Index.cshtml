@@ -6,22 +6,40 @@
 
 
 
-<div class="row">
-    @foreach (var post in Model)
-    {
-        <div class="col-md-6">
-            <h2>@post.Title</h2>
-            <div>
-                Posted on <i>@post.Date</i>
-                @if (post.Author!=null)
-                {
-                    @:by  @post.Author.FullName <i>(@post.Author.UserName)</i>
-                }
+
+
+<div id="wrapper">
+
+    <div id="sidebar-wrapper">
+        
+        <ul class="sidebar-nav">
+            <li><h3>Latest comments:</h3></li>
+            @foreach (var comment in ViewBag.Comments)
+            {
+                string text = comment.Body;
+                <li>@Html.ActionLink(text, "Details", "Posts",new { id = comment.Post.Id },null) </li>
+            }
+        </ul>
+    </div>
+
+    <div id="page-content-wrapper">
+        <div class="page-content">
+            <div class="container">
+                <div class="row">
+                        @foreach (var post in Model)
+                        {
+                            <div class="col-md-6">
+                                <h2>@post.Title</h2>
+                                <div>
+                                    Posted on <i>@post.Date</i> by @post.Author.FullName <i>(@post.Author.UserName)</i>
+                                </div>
+                                <p> @post.Body</p>
+                            </div>
+                        }
+                </div>
             </div>
-            <p>
-                @post.Body
-            </p>
         </div>
-    }
+    </div>
 </div>
+
 
