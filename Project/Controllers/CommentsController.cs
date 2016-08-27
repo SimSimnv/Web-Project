@@ -21,6 +21,14 @@ namespace WebProject.Controllers
             return View(comments.ToList());
         }
 
+        public ActionResult SearchComments(string SearchString)
+        {
+            string SearchComment = SearchString.ToLower().Trim();
+            var comments = db.Comments.Include(c => c.Author).Include(c => c.Post);
+            comments = comments.Where(c => c.Body.ToLower().Contains(SearchComment));
+            return View("Index",comments.ToList());
+        }
+
         // GET: Comments/Details/5
         public ActionResult Details(int? id)
         {

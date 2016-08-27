@@ -21,6 +21,63 @@ namespace WebProject.Controllers
             return View(posts.ToList());
         }
 
+
+
+        public ActionResult SearchTitles(string SearchString)
+        {
+            string SearchTitle = SearchString.ToLower().Trim();
+
+            var posts = db.Posts.Include(p => p.Author).Include(p => p.Comments).Include(p => p.Tags);
+            posts = posts.Where(p => p.Title.ToLower().Contains(SearchTitle));
+
+            return View("Index",posts.ToList());
+        }
+
+
+        public ActionResult SearchTags(string SearchString)
+        {
+            string SearchTag = SearchString.ToLower().Trim();
+
+            var posts = db.Posts.Include(p => p.Author).Include(p => p.Comments).Include(p => p.Tags);
+            var posts2 = new List<Post>();
+
+            foreach (var post in posts)
+            {
+                foreach (var tag in post.Tags)
+                {
+                    if (tag.Name== SearchTag)
+                    {
+                        posts2.Add(post);
+                    }
+                }
+            }
+            
+
+            return View("Index", posts2);
+        }
+
+        public ActionResult SearchAuthors(string SearchString)
+        {
+            string SearchAuthor = SearchString.ToLower().Trim();
+
+            var posts = db.Posts.Include(p => p.Author).Include(p => p.Comments).Include(p => p.Tags);
+            posts = posts.Where(p => p.Author.UserName.ToLower().Contains(SearchAuthor));
+
+            return View("Index", posts.ToList());
+        }
+
+        public ActionResult SearchPosts(string SearchString)
+        {
+            string SearchPost = SearchString.ToLower().Trim();
+
+            var posts = db.Posts.Include(p => p.Author).Include(p => p.Comments).Include(p => p.Tags);
+            posts = posts.Where(p => p.Body.ToLower().Contains(SearchPost));
+
+            return View("Index", posts.ToList());
+        }
+
+
+
         // GET: Posts/Details/5
         public ActionResult Details(int? id)
         {

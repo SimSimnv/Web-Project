@@ -87,3 +87,23 @@ textarea {
     }
 
 }
+
+
+
+
+
+#TagsSearch{
+    display:none;
+}
+#AuthorsSearch{
+    display:none;
+}
+#CommentsSearch{
+    display:none;
+}
+#PostsSearch{
+    display:none;
+}
+
+
+
