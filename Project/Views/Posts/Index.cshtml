@@ -47,11 +47,12 @@
         <td>
             @if (item.Author.FullName!=null)
             {
-               @: @item.Author.FullName<br/><i>(@item.Author.UserName)</i>
+               @: @item.Author.FullName<br/><i>(@Html.ActionLink(item.Author.UserName, "UserDetails", "Home", new { UserName = item.Author.UserName },null))</i>
+            
             }
             else
             {
-                @: @item.Author.UserName
+                @: @Html.ActionLink(item.Author.UserName, "UserDetails", "Home", new { UserName = item.Author.UserName }, null)
             }
             
         </td>
@@ -64,7 +65,7 @@
         <td>
             @foreach (var tag in item.Tags)
             {
-                @: @(tag.Name + " ")
+                @: [@Html.ActionLink(tag.Name, "SearchTags", new { SearchString = tag.Name })]     
             }
         </td>
         <td>

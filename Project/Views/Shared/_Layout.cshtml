@@ -28,6 +28,10 @@
                     {
                         <li>@Html.ActionLink("Create Post", "Create", "Posts")</li>
                     }
+                    @if (User.IsInRole("Administrator"))
+                    {
+                        <li>@Html.ActionLink("Admins Panel", "AdminPanel", "Home")</li>
+                    }
                   
                     
                 </ul>

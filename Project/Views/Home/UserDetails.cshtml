@@ -1,0 +1,89 @@
+﻿@model IEnumerable<WebProject.Models.Post>
+
+@{
+    ViewBag.Title = "Index";
+}
+
+<hr/>
+
+
+    <dl class="dl-horizontal" style="padding-left:30%">
+        <dt>
+            Username:
+        </dt>
+        <dd>
+            @ViewBag.Author.UserName
+        </dd>
+        @if (ViewBag.Author.FullName != null)
+        {
+            <dt>
+                Full name:
+            </dt>
+            <dd>
+                @ViewBag.Author.FullName
+            </dd>
+        }
+        <dt>
+            Posts made:
+        </dt>
+        <dd>
+            @Model.Count()
+        </dd>
+
+        <dt>
+            Coments made:
+        </dt>
+        <dd>
+            @ViewBag.Comments.Count
+        </dd>
+    </dl>
+
+
+
+<hr/>
+
+<div style="padding-left:20%">
+
+    <table class="table" style="width:30%;  float:left; margin-right:80px">
+        <tr>
+            <th>
+                Posts
+            </th>
+        </tr>
+
+
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td>
+                    @Html.ActionLink(item.Title, "Details", "Posts", new { id = item.Id }, null)
+                </td>
+            </tr>
+
+        }
+
+
+    </table>
+
+    <table class="table" style="width:30%">
+        <tr>
+            <th>
+                Comments
+            </th>
+        </tr>
+
+     
+        @foreach (var comment in ViewBag.Comments)
+        {
+            <tr>
+                <td>
+                    @{ string body = comment.Body;}
+                    @Html.ActionLink(body, "Details", "Posts", new { id = comment.Post.Id }, null)
+                </td>
+            </tr>
+        }
+
+    </table>
+
+</div>
+   
