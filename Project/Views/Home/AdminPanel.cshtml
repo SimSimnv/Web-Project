@@ -2,10 +2,50 @@
 @{
     ViewBag.Title = "Home Page";
 }
-@model List<Post>
-
+@model List<ApplicationUser>
+@using Microsoft.AspNet.Identity
+@using Microsoft.AspNet.Identity.EntityFramework
+@{
+    var userManager = new UserManager<ApplicationUser>(new UserStore<ApplicationUser>(new ApplicationDbContext()));
+}
 
 
 
 
 <h1>Admins Panel</h1>
+
+
+<table class="table">
+    <tr>
+        <th>
+            UserName
+        </th>
+        <th>
+            Role
+        </th>
+        <th>
+
+        </th>
+    </tr>
+    @foreach (var user in Model)
+    {
+        <tr>
+            <td>@user.UserName</td>
+            @if (userManager.GetRoles(user.Id).FirstOrDefault() != "Administrator")
+            {
+                <td>Regular user</td>
+                
+                <td>@Html.ActionLink("Promote", "AddAdmin", new {id=user.Id })</td>
+            }
+            else
+            {
+                <td>Administrator</td>
+                <td></td>
+            }
+
+        </tr>
+        
+
+    }
+</table>
+
