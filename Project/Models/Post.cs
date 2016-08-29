@@ -24,6 +24,8 @@ namespace WebProject.Models
         [Required]
         public DateTime Date { get; set; }
 
+        public int ViewCount { get; set; }
+
         public ApplicationUser Author { get; set; }
 
         public ICollection<Comment> Comments { get; set; }

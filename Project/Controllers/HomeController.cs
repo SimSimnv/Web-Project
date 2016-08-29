@@ -5,6 +5,8 @@ using System.Web;
 using System.Web.Mvc;
 using WebProject.Models;
 using System.Data.Entity;
+using Microsoft.AspNet.Identity;
+using Microsoft.AspNet.Identity.EntityFramework;
 
 namespace WebProject.Controllers
 {
@@ -13,9 +15,19 @@ namespace WebProject.Controllers
         private ApplicationDbContext db = new ApplicationDbContext();
         public ActionResult Index()
         {
-            var posts = db.Posts.Include(p => p.Author).OrderByDescending(p => p.Date).Take(4).ToList();
+            var posts = db.Posts.Include(p => p.Author).OrderByDescending(p => p.Comments.Count).Take(5).ToList();
+
+            
+            
+            // Sidebar
             var comments = db.Comments.Include(c => c.Author).Include(c => c.Post).OrderByDescending(c => c.Date).Take(5);
             ViewBag.Comments = comments;
+
+            var PopularPosts = db.Posts.OrderByDescending(p => p.ViewCount).Take(5);
+            ViewBag.PopularPosts = PopularPosts;
+
+            var NewestPosts = db.Posts.OrderByDescending(p => p.Date).Take(5);
+            ViewBag.NewestPosts = NewestPosts;
             
             return View(posts);
         }
@@ -35,11 +47,22 @@ namespace WebProject.Controllers
         [Authorize(Roles ="Administrator")]
         public ActionResult AdminPanel()
         {
-            var posts = db.Posts.Include(p => p.Author).OrderByDescending(p => p.Date).Take(4).ToList();
-            var comments = db.Comments.Include(c => c.Author).Include(c => c.Post).OrderByDescending(c => c.Date).Take(5);
-            ViewBag.Comments = comments;
 
-            return View(posts);
+            var users = db.Users.ToList();
+            return View(users);
+
+        }
+        [Authorize(Roles = "Administrator")]
+        public ActionResult AddAdmin(string id)
+        {
+            var userManager = new UserManager<ApplicationUser>(new UserStore<ApplicationUser>(new ApplicationDbContext()));
+            userManager.AddToRole(id, "Administrator");
+            db.SaveChanges();
+
+            var users = db.Users.ToList();
+
+            return View("AdminPanel",users);
+
         }
     }
 }

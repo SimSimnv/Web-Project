@@ -85,6 +85,10 @@ namespace WebProject.Controllers
             {
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
+            var postView = db.Posts.SingleOrDefault(p=>p.Id==id);
+            postView.ViewCount++;
+            db.SaveChanges();
+
             Post post = db.Posts.Include(p => p.Author).Include(p=>p.Comments).SingleOrDefault(p => p.Id == id);
             var comments = db.Comments.Where(c => c.Post.Id == id).Include(c => c.Author);
             ViewBag.Comments = comments;

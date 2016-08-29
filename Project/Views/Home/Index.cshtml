@@ -13,14 +13,35 @@
     <div id="sidebar-wrapper">
         
         <ul class="sidebar-nav">
+
+            <li><h3>Most Viewed Posts:</h3></li>
+            @foreach (var post in ViewBag.PopularPosts)
+            {
+                string text = post.Title;
+                <li>@Html.ActionLink(text, "Details", "Posts", new { id = post.Id }, null) </li>
+            }
+
+            <li><h3>Newest Posts:</h3></li>
+            @foreach (var post in ViewBag.NewestPosts)
+            {
+                string text = post.Title;
+                <li>@Html.ActionLink(text, "Details", "Posts", new { id = post.Id }, null) </li>
+            }
+
             <li><h3>Latest comments:</h3></li>
             @foreach (var comment in ViewBag.Comments)
             {
                 string text = comment.Body;
                 <li>@Html.ActionLink(text, "Details", "Posts",new { id = comment.Post.Id },null) </li>
             }
+            
+
+           
         </ul>
+
     </div>
+
+   
 
     <div id="page-content-wrapper">
         <div class="page-content">
@@ -28,7 +49,7 @@
                 <div class="row">
                         @foreach (var post in Model)
                         {
-                            <div class="col-md-6">
+                            <div class="col-md-12">
                                 <h2>@post.Title</h2>
                                 <div>
                                     Posted on <i>@post.Date</i> by @post.Author.FullName <i>(@post.Author.UserName)</i>
@@ -40,6 +61,8 @@
             </div>
         </div>
     </div>
+
+
 </div>
 
 
