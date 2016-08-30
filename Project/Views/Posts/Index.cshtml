@@ -12,6 +12,37 @@
     @Html.ActionLink("Create New", "Create")
 </p>
 }
+
+Sort by:
+<select id="SelectedFilter">
+    <option value="1">Views</option>
+    <option value="2">Date</option>
+    <option value="3">Comments</option>
+</select>
+<button id="FilterBtn" type="button">Filter</button>
+
+<script>
+    $(document).ready(function () {
+        $('#FilterBtn').on('click', function () {
+
+            var selectedOption = $("#SelectedFilter option:selected").val();
+
+            if (selectedOption === '1') {
+                window.location.href = "/Posts/FilterViews"
+            }
+            else if (selectedOption === '2') {
+                window.location.href = "/Posts/FilterDate"
+            }
+            else if (selectedOption === '3') {
+                window.location.href = "/Posts/FilterComments"
+            }
+            
+        });
+    });
+</script>
+
+
+
 <table class="table">
     <tr>
         <th>

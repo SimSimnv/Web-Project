@@ -238,6 +238,22 @@ namespace WebProject.Controllers
             base.Dispose(disposing);
         }
 
-       
+        public ActionResult FilterViews()
+        {
+            var posts = db.Posts.Include(p => p.Author).Include(p => p.Comments).Include(p => p.Tags).OrderByDescending(p=>p.ViewCount);
+            return View("Index",posts.ToList());
+        }
+        public ActionResult FilterDate()
+        {
+            var posts = db.Posts.Include(p => p.Author).Include(p => p.Comments).Include(p => p.Tags).OrderByDescending(p => p.Date);
+            return View("Index", posts.ToList());
+        }
+        public ActionResult FilterComments()
+        {
+            var posts = db.Posts.Include(p => p.Author).Include(p => p.Comments).Include(p => p.Tags).OrderByDescending(p => p.Comments.Count);
+            return View("Index", posts.ToList());
+        }
+
+
     }
 }
