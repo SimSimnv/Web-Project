@@ -4,68 +4,77 @@
     ViewBag.Title = "Details";
 }
 
-<h2>Details</h2>
 
-<div>
-    <h4>Post</h4>
-    <hr />
-    <dl class="dl-horizontal">
-        <dt>
-            @Html.DisplayNameFor(model => model.Title)
-        </dt>
 
-        <dd>
-            @Html.DisplayFor(model => model.Title)
-        </dd>
-        <dt>
-           Author
-        </dt>
+<div id="PostBox">
 
-        <dd>
-            @Model.Author.FullName<i>(@Model.Author.UserName )</i>                       
-        </dd>
-        <dt>
-            @Html.DisplayNameFor(model => model.Body)
-        </dt>
+    <h2>@Model.Title</h2>
 
-        <dd>
-            @Html.DisplayFor(model => model.Body)
-        </dd>
+    <div id="PostText">
+        @Model.Body
+    </div>
 
-        <dt>
-            @Html.DisplayNameFor(model => model.Date)
-        </dt>
 
-        <dd>
-            @Html.DisplayFor(model => model.Date)
-        </dd>
-
-        <dd>
-            @if (User.Identity.IsAuthenticated)
-            {
-                <p>
-                    @Html.ActionLink("Add Comment", "Create","Comments", new { id = Model.Id }, null)
-                </p>
-            }
-        </dd>
-    </dl>
-
-    <table class="table">
-        <tr>
-            <th>Author</th>
-            <th>Comment</th>
-        </tr>
-        @foreach (var comment in ViewBag.Comments)
+    <div>
+        Posted by
+        @if (Model.Author.FullName != null)
         {
-            <tr>
-                <td>@comment.Author.UserName</td>
-                <td>@comment.Body</td>
-            </tr>
-        }
-    </table>
+            @: @Model.Author.FullName<i>(@Html.ActionLink(Model.Author.UserName, "UserDetails", "Home", new { UserName = Model.Author.UserName }, null))</i>
 
+
+        }
+        else
+        {
+            @: @Html.ActionLink(Model.Author.UserName, "UserDetails", "Home", new { UserName = Model.Author.UserName }, null)
+                    }
+        on <i>@Model.Date</i>
+    </div>
+
+
+    <div>
+        Views: @Model.ViewCount Comments: @Model.Comments.Count
+    </div>
+
+    <div>
+        Tags:
+        @foreach (var tag in Model.Tags)
+        {
+            <span class="badge" style="background:#41474D">@Html.ActionLink(tag.Name, "SearchTags", new { SearchString = tag.Name }, new { style = "text-decoration:none;color:white" })</span>
+
+        }
+    </div>
 
 </div>
+
+
+
+@if (User.Identity.IsAuthenticated)
+{
+    <div class="btn btn-default" style="margin-top:1%; margin-bottom:1%">
+        @Html.ActionLink("Add Comment", "Create", "Comments", new { id = Model.Id }, null)
+       
+    </div>
+}
+
+
+
+
+@foreach (var comment in ViewBag.Comments)
+{
+    string commentAuthor = comment.Author.UserName;
+
+    <div id="CommentText">
+        <span class="SmallText">@Html.ActionLink(commentAuthor, "UserDetails", "Home", new { UserName = comment.Author.UserName }, null) said:</span> <br />
+        @comment.Body <br />
+        <span class="SmallText">on @comment.Date</span>
+    </div>
+   
+}
+
+
+
+
+
 <p>
     @if (Model.Author.UserName == User.Identity.Name || User.IsInRole("Administrator"))
     {

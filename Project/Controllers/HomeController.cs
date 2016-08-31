@@ -15,7 +15,11 @@ namespace WebProject.Controllers
         private ApplicationDbContext db = new ApplicationDbContext();
         public ActionResult Index()
         {
-            var posts = db.Posts.Include(p => p.Author).OrderByDescending(p => p.Comments.Count).Take(5).ToList();
+            var posts = db.Posts.Include(p => p.Author)
+                .Include(p=>p.Tags)
+                .Include(p=>p.Comments)
+                .Where(p=>p.IsAnnouncement==true)
+                .OrderByDescending(p => p.Date).Take(4).ToList();
 
             
             

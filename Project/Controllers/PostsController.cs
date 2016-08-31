@@ -6,6 +6,7 @@ using System.Linq;
 using System.Net;
 using System.Web;
 using System.Web.Mvc;
+using WebProject.Extensions;
 using WebProject.Models;
 
 namespace WebProject.Controllers
@@ -17,7 +18,11 @@ namespace WebProject.Controllers
         // GET: Posts
         public ActionResult Index()
         {
-            var posts = db.Posts.Include(p => p.Author).Include(p=>p.Comments).Include(p=>p.Tags);
+            var posts = db.Posts.Include(p => p.Author)
+                .Include(p=>p.Comments)
+                .Include(p=>p.Tags)
+                .OrderByDescending(p=>p.Date);
+
             return View(posts.ToList());
         }
 
@@ -89,8 +94,8 @@ namespace WebProject.Controllers
             postView.ViewCount++;
             db.SaveChanges();
 
-            Post post = db.Posts.Include(p => p.Author).Include(p=>p.Comments).SingleOrDefault(p => p.Id == id);
-            var comments = db.Comments.Where(c => c.Post.Id == id).Include(c => c.Author);
+            Post post = db.Posts.Include(p => p.Author).Include(p=>p.Comments).Include(p=>p.Tags).SingleOrDefault(p => p.Id == id);
+            var comments = db.Comments.Where(c => c.Post.Id == id).Include(c => c.Author).OrderByDescending(c=>c.Date);
             ViewBag.Comments = comments;
            
             if (post == null)
@@ -155,7 +160,7 @@ namespace WebProject.Controllers
                 }
 
                 db.SaveChanges();
-
+                this.AddNotification("Post created.", NotificationType.INFO);
                 return RedirectToAction("Index");
             }
 
@@ -185,11 +190,12 @@ namespace WebProject.Controllers
         [HttpPost]
         [ValidateAntiForgeryToken]
         [Authorize]
-        public ActionResult Edit([Bind(Include = "Id,Title,Body,Date")] Post post)
+        public ActionResult Edit([Bind(Include = "Id,Title,Body")] Post post)
         {
             
             if (ModelState.IsValid)
             {
+                post.Date = DateTime.Now;
                 db.Entry(post).State = EntityState.Modified;
                 db.SaveChanges();
                 return RedirectToAction("Index");
@@ -223,7 +229,18 @@ namespace WebProject.Controllers
         [ValidateAntiForgeryToken]
         public ActionResult DeleteConfirmed(int id)
         {
+            
             Post post = db.Posts.Find(id);
+            Post post2 = db.Posts.Include(p => p.Comments).SingleOrDefault(p => p.Id == id);
+            if (post2.Comments.Count>0)
+            {
+                post.Author = db.Users.Single(u => u.UserName == "PlaceHolder@author.com");
+                post.Title = "[DELETED]";
+                post.Body = "[DELETED]";
+                post.Date = DateTime.Now;
+                db.SaveChanges();
+                return RedirectToAction("Index");
+            }
             db.Posts.Remove(post);
             db.SaveChanges();
             return RedirectToAction("Index");
@@ -252,6 +269,68 @@ namespace WebProject.Controllers
         {
             var posts = db.Posts.Include(p => p.Author).Include(p => p.Comments).Include(p => p.Tags).OrderByDescending(p => p.Comments.Count);
             return View("Index", posts.ToList());
+        }
+
+
+
+        [Authorize(Roles ="Administrator")]
+        public ActionResult CreateAnnouncement()
+        {
+            return View();
+        }
+
+        // POST: Posts/Create
+        // To protect from overposting attacks, please enable the specific properties you want to bind to, for 
+        // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
+        [HttpPost]
+        [Authorize(Roles = "Administrator")]
+        [ValidateAntiForgeryToken]
+        public ActionResult CreateAnnouncement(string TagString, [Bind(Include = "Id,Title,Body")] Post post)
+        {
+            if (ModelState.IsValid)
+            {
+                //creating new tags in the tag table
+
+                var tags = TagString
+                    .Split(',')
+                    .Select(t => t.ToLower())
+                    .Select(t => t.Trim())
+                    .Distinct();
+
+                foreach (var name in tags)
+                {
+                    //tags are unique->checking if tag already exists
+
+                    var tagCheck = db.Tags.FirstOrDefault(t => t.Name == name);
+                    if (!db.Tags.ToList().Contains(tagCheck))
+                    {
+                        var tag = new Tag();
+                        tag.Name = name;
+                        db.Tags.Add(tag);
+                    }
+
+                }
+
+                //creating the post
+
+                post.Date = DateTime.Now;
+                post.Author = db.Users.FirstOrDefault(u => u.UserName == User.Identity.Name);
+                post.IsAnnouncement = true;
+                db.Posts.Add(post);
+                db.SaveChanges();
+
+                //adding the new tags to the post and updating the table
+                foreach (var name in tags)
+                {
+                    var tag = db.Tags.FirstOrDefault(t => t.Name == name);
+                    db.Posts.Include("Tags").FirstOrDefault(p => p.Id == post.Id).Tags.Add(tag);
+                }
+
+                db.SaveChanges();
+                return RedirectToAction("Index","Home");
+            }
+
+            return View(post);
         }
 
 

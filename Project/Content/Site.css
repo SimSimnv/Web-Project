@@ -22,12 +22,51 @@ select,
 textarea {
     max-width: 280px;
 }
+.alert{
+    background:#737B80;
+    margin-top:10px;
+}
+select{
+    color:black;}
 
+#PostBox{
+    background: #737B80;
+    border-radius:5px;
+    padding-left:5px;
+    padding-bottom:5px;
+    color:#272B30;
+    text-decoration:none;  
 
+}
+#PostBox h2{
+    color:whitesmoke;
+    font-family:Calibri;
+}
+#PostBox #PostText{
+    border-style:solid;
+    border-radius:5px;
+    border-color:#525252;
+    border-width:1px;
+    background:#989696;
+    margin-right:20px;
+    padding-left:5px;
+    margin-bottom:20px;
+}
 
-
-
-
+#CommentText{
+    color:#272B30;
+    border-style:solid;
+    border-radius:5px;
+    border-color:#585f63;
+    border-width:5px;
+    background:#989696;
+    margin-left:20px;
+    padding-left:5px;
+    margin-bottom:10px;
+}
+.SmallText{
+    font-size:10px
+}
 
 
 
@@ -63,6 +102,12 @@ textarea {
   padding: 0;
   padding-left:10px;
   padding-bottom:10px;
+
+
+}
+.sidebar-nav hr{
+  
+    margin-right:20px;
 }
 
 @media (max-width:767px) {

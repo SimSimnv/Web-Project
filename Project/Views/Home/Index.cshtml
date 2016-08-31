@@ -1,4 +1,5 @@
 ﻿@using WebProject.Models;
+@using WebProject.Classes;
 @{
     ViewBag.Title = "Home Page";
 }
@@ -17,21 +18,21 @@
             <li><h3>Most Viewed Posts:</h3></li>
             @foreach (var post in ViewBag.PopularPosts)
             {
-                string text = post.Title;
+                string text = CutText.Cutter(post.Title,40);
                 <li>@Html.ActionLink(text, "Details", "Posts", new { id = post.Id }, null) </li>
             }
-
+            <li><hr /></li>
             <li><h3>Newest Posts:</h3></li>
             @foreach (var post in ViewBag.NewestPosts)
             {
-                string text = post.Title;
+                string text = CutText.Cutter(post.Title,40);
                 <li>@Html.ActionLink(text, "Details", "Posts", new { id = post.Id }, null) </li>
             }
-
+            <li><hr /></li>
             <li><h3>Latest comments:</h3></li>
             @foreach (var comment in ViewBag.Comments)
             {
-                string text = comment.Body;
+                string text = CutText.Cutter(comment.Body,30);
                 <li>@Html.ActionLink(text, "Details", "Posts",new { id = comment.Post.Id },null) </li>
             }
             
@@ -46,18 +47,66 @@
     <div id="page-content-wrapper">
         <div class="page-content">
             <div class="container">
+
+
                 <div class="row">
-                        @foreach (var post in Model)
-                        {
-                            <div class="col-md-12">
-                                <h2>@post.Title</h2>
-                                <div>
-                                    Posted on <i>@post.Date</i> by @post.Author.FullName <i>(@post.Author.UserName)</i>
+                    @foreach (var item in Model)
+                    {
+                        <div class="col-md-12">
+                            <div id="PostBox" style="margin-right:40%">
+
+                                <h2>@item.Title</h2>
+
+                                <div id="PostText">
+                                    @CutText.Cutter(item.Body, 300)
                                 </div>
-                                <p> @post.Body</p>
+
+
+                                <div>
+                                    Posted by
+                                    @if (item.Author.FullName != null)
+                                    {
+                                        @: @item.Author.FullName<i>(@Html.ActionLink(item.Author.UserName, "UserDetails", "Home", new { UserName = item.Author.UserName }, null))</i>
+
+
+                                    }
+                                    else
+                                    {
+                                        @: @Html.ActionLink(item.Author.UserName, "UserDetails", "Home", new { UserName = item.Author.UserName }, null)
+                                     }
+                                    on <i>@item.Date</i>
+                                </div>
+
+
+                                <div>
+                                    Views: @item.ViewCount Comments: @item.Comments.Count
+                                </div>
+
+                                <div>
+                                    Tags:
+                                    @foreach (var tag in item.Tags)
+                                    {
+                                        <span class="badge" style="background:#41474D">@Html.ActionLink(tag.Name, "SearchTags","Posts", new { SearchString = tag.Name }, null)</span>
+
+                                    }
+                                </div>
+
+                                <div class="btn btn-default" style="margin-top:1%">
+                                    @Html.ActionLink("Read more", "Details", "Posts",new { id = item.Id }, null )
+                                </div>
+
+                                <div style="float:right;margin-top:25px;margin-right:2px">
+                                    @if (item.Author != null && (item.Author.UserName == User.Identity.Name || User.IsInRole("Administrator")))
+                                    {
+                                        @: [ @Html.ActionLink("Edit", "Edit","Posts", new { id = item.Id },null) ] [ @Html.ActionLink("Delete", "Delete","Posts", new { id = item.Id },null) ]
+                                    }
+                                </div>
                             </div>
-                        }
+
+                        </div>
+                    }
                 </div>
+
             </div>
         </div>
     </div>

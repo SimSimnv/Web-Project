@@ -19,12 +19,15 @@ namespace WebProject.Models
         public string Title { get; set; }
 
         [Required]
+        [DataType(DataType.MultilineText)]
         public string Body { get; set; }
 
         [Required]
         public DateTime Date { get; set; }
 
         public int ViewCount { get; set; }
+
+        public bool IsAnnouncement { get; set; }
 
         public ApplicationUser Author { get; set; }
 
